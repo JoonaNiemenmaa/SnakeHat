@@ -1,7 +1,12 @@
 # Joona Niemenmaa 14/1/2024 SnakeHat.py
-from sense_hat import SenseHat 
-import numpy as np
-import time as tm
+import sys
+try:
+	from sense_hat import SenseHat 
+	import numpy as np
+	import time as tm
+except OSError:
+	print("Tarvittavia kirjastoja ei löydy, lopetetaan.")
+	sys.exit(0)
 
 RIVEJA = 8
 SARAKKEITA = 8
@@ -23,7 +28,7 @@ class POSITION():
 	y = 0
 class PLAYER():
 	position = POSITION()
-	direction = "RIGHT"
+	direction = UP 
 
 Sense = SenseHat()
 
@@ -48,24 +53,40 @@ def clearLED():
 
 def updatePosition(player):
 	if (player.direction == UP):
+		if (player.position.y == 0):
+			player.position.y = RIVEJA - 1
+		else:
 			player.position.y = player.position.y - 1
-		elif (player.direction == DOWN):
+	elif (player.direction == DOWN):
+		if (player.position.y == RIVEJA - 1):
+			player.position.y = 0
+		else:
 			player.position.y = player.position.y + 1
-		elif (player.direction == RIGHT):
+	elif (player.direction == RIGHT):
+		if (player.position.x == SARAKKEITA - 1):
+			player.position.x = 0
+		else:
 			player.position.x = player.position.x + 1
-		elif (player.direction == LEFT):
+	elif (player.direction == LEFT):
+		if (player.position.x == 0):
+			player.position.x = SARAKKEITA - 1
+		else:
 			player.position.x = player.position.x - 1
 	return player 
 
-def updateDirection():
-	pass
-	return None
+def updateDirection(player, event):
+	if (player.direction != event.direction):
+		if ((player.direction == UP or player.direction == DOWN) and (event.direction == LEFT or event.direction == RIGHT)):
+			player.direction = event.direction
+		elif ((player.direction == LEFT or player.direction == RIGHT) and (event.direction == DOWN or event.direction == UP)):
+			player.direction = event.direction
+	return player 
 
 def paaohjelma():
 	player = PLAYER()
 	event = Sense.stick.wait_for_event()
 	while (event.direction != "middle"):
-		player.direction = event.direction
+		player = updateDirection(player, event)
 		player = updatePosition(player)
 		LED_Matrix = np.zeros((RIVEJA, SARAKKEITA), int)
 		LED_Matrix[player.position.y][player.position.x] = 1
