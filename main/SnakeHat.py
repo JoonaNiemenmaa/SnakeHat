@@ -115,13 +115,12 @@ def createScorePoint(player, snake_parts):
 	while (accept == False):
 		score_point.x = rd.randrange(COLUMNS)
 		score_point.y = rd.randrange(ROWS)
-		print(score_point.x, score_point.y)
 		if (player.x == score_point.x and player.y == score_point.y):
 			continue
 		for i in snake_parts:
 			if (i.x == score_point.x and i.y == score_point.y):
 				continue
-		accept = True
+			accept = True
 	return score_point
 
 def lengthenSnake(player, snake_parts):
@@ -178,10 +177,10 @@ def main():
 		for i in range(len(snake_parts)):
 			snake_parts[i] = updatePosition(snake_parts[i])
 		LED_Matrix = np.zeros((ROWS, COLUMNS), int)
-		LED_Matrix[score_point.y][score_point.x] = 2
 		LED_Matrix[player.y][player.x] = 1
 		for i in range(len(snake_parts)):
 			LED_Matrix[snake_parts[i].y][snake_parts[i].x] = 1
+		LED_Matrix[score_point.y][score_point.x] = 2
 		updateLED(LED_Matrix)
 		for i in range(len(snake_parts)):
 			if (snake_parts[i].x == player.x and snake_parts[i].y == player.y):
